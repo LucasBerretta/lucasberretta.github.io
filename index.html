@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas Berretta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-glow: rgba(0,255,136,0.15);
+    --blue: #4488ff;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-dimmer: #555568;
+    --border: #2a2a3a;
+    --red: #ff4466;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    background: rgba(10,10,15,0.8);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--green);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 56px;
+    position: relative;
+  }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+  .hero h1 .accent { color: var(--green); }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.6s;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.8s;
+  }
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+  }
+
+  /* GRID BACKGROUND EFFECT */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(80px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTIONS */
+  section { padding: 100px 0; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  section h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 40px;
+  }
+
+  /* PROJECT CARDS */
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px;
+    margin-bottom: 24px;
+    transition: border-color 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-2px);
+  }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover::before { opacity: 1; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .card-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dimmer);
+  }
+  .card-desc {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--bg3);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .tag.highlight {
+    color: var(--green);
+    border-color: rgba(0,255,136,0.3);
+    background: rgba(0,255,136,0.05);
+  }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-diagram {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 32px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.8;
+  }
+  .arch-diagram .g { color: var(--green); }
+  .arch-diagram .b { color: var(--blue); }
+  .arch-diagram .d { color: var(--text-dimmer); }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .skill-category h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--green);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .skill-category p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* EDUCATION */
+  .edu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .edu-degree { font-size: 18px; font-weight: 600; }
+  .edu-school { color: var(--text-dim); font-size: 15px; margin-top: 4px; }
+  .edu-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dimmer);
+  }
+  .edu-details {
+    margin-top: 12px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* PNL SECTION */
+  .pnl-highlight {
+    text-align: center;
+    padding: 60px 20px;
+    margin: 40px 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.03) 0%, rgba(68,136,255,0.03) 100%);
+  }
+  .pnl-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+  .pnl-label {
+    font-size: 14px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 12px;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    text-align: center;
+    padding: 80px 0 120px;
+  }
+  .contact-section h2 { margin-bottom: 16px; }
+  .contact-section p {
+    color: var(--text-dim);
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+  .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .contact-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .contact-link:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(0,255,136,0.05);
+  }
+
+  /* PHOTO GALLERY */
+  .photo-gallery {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .photo-gallery img {
+    flex: 1;
+    min-width: 200px;
+    max-width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .photo-placeholder {
+    flex: 1;
+    min-width: 200px;
+    height: 240px;
+    background: var(--bg3);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dimmer);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .hero-stats { flex-direction: column; gap: 24px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 11px; }
+    section { padding: 60px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo">LB_</a>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">Quantitative Trader & Systems Engineer</div>
+    <h1>Lucas <span class="accent">Berretta</span></h1>
+    <p class="hero-sub">
+      I build and operate low-latency trading infrastructure on EVM blockchains.
+      Co-founder of a self-funded quantitative trading team. Engineering Physics @ UBC.
+    </p>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-value">6-figure+</div>
+        <div class="stat-label">Realized P&L (2025)</div>
+      </div>
+      <div>
+        <div class="stat-value">&lt;2s</div>
+        <div class="stat-label">Block-to-execution</div>
+      </div>
+      <div>
+        <div class="stat-value">50+</div>
+        <div class="stat-label">Pools Indexed Real-Time</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label">What I've Built</div>
+    <h2>Projects & Trading</h2>
+
+    <div class="pnl-highlight">
+      <div class="pnl-number">$XXX,XXX+</div>
+      <div class="pnl-label">Combined Returns: Arbitrage + Airdrops + Discretionary — 2025</div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Automated Arbitrage System — Self-Funded Trading Team</span>
+        <span class="card-date">SEP 2024 → PRESENT</span>
+      </div>
+      <p class="card-desc">
+        End-to-end arbitrage infrastructure operating on Polygon PoS. The system runs a self-hosted
+        full node (Bor + Heimdall) on dedicated hardware, feeding a custom Rust block indexer that
+        maintains real-time AMM pool state in memory. On every new block, the detection engine
+        scans the pool graph for mispricing and submits atomic execution transactions through
+        Solidity contracts that auto-revert if unprofitable. Zero execution risk by construction.
+      </p>
+
+      <div class="arch-diagram"><span class="d">┌──────────────┐</span>     <span class="d">┌──────────────┐</span>     <span class="d">┌──────────────┐</span>     <span class="d">┌──────────────┐</span>
+<span class="d">│</span> <span class="g">Polygon P2P</span>  <span class="d">│</span> ──→ <span class="d">│</span> <span class="g">Local Bor</span>    <span class="d">│</span> ──→ <span class="d">│</span> <span class="b">Rust Indexer</span> <span class="d">│</span> ──→ <span class="d">│</span> <span class="g">Arb Detector</span> <span class="d">│</span>
+<span class="d">│</span>  Validators   <span class="d">│</span>     <span class="d">│</span>  Full Node   <span class="d">│</span>     <span class="d">│</span>  HashMap     <span class="d">│</span>     <span class="d">│</span>  Route Scan  <span class="d">│</span>
+<span class="d">└──────────────┘</span>     <span class="d">└──────────────┘</span>     <span class="d">└──────────────┘</span>     <span class="d">└──────┬───────┘</span>
+                                                                           <span class="d">│</span>
+                    <span class="d">┌──────────────┐</span>                                    <span class="d">│</span>
+                    <span class="d">│</span> <span class="g">Solidity</span>     <span class="d">│</span> ←──────────────────────────────────<span class="d">┘</span>
+                    <span class="d">│</span>  Atomic Exec <span class="d">│</span>  <span class="d">submit via local node</span>
+                    <span class="d">└──────────────┘</span></div>
+
+      <div class="tags">
+        <span class="tag highlight">Rust</span>
+        <span class="tag highlight">Solidity</span>
+        <span class="tag">Go</span>
+        <span class="tag">Python</span>
+        <span class="tag">Foundry</span>
+        <span class="tag">Geth/Bor</span>
+        <span class="tag">PebbleDB</span>
+        <span class="tag">WebSocket</span>
+        <span class="tag">SQLite</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Quantitative Trading Framework</span>
+        <span class="card-date">JAN – FEB 2025</span>
+      </div>
+      <p class="card-desc">
+        Backtesting and signal generation framework for discretionary crypto trading. Ingests millions
+        of spot and futures trades into PostgreSQL, applies correlated parameter filtering across
+        configurable strategy dimensions, and runs Bayesian hyperparameter optimization with
+        custom rolling data structures. Dynamic position sizing informed by volatility and
+        statistical regime measures.
+      </p>
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Bayesian Optimization</span>
+        <span class="tag">Statistical Analysis</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Engineering Physics ML Competition — 2nd Place</span>
+        <span class="card-date">MAR 2025</span>
+      </div>
+      <p class="card-desc">
+        Developed an autonomous robot that navigates complex multi-terrain courses using a finite
+        state machine with five tuned PID controllers. Real-time computer vision pipeline: SIFT-based
+        detection with homography correction, custom-trained CNN with near-perfect accuracy on
+        37-class character recognition. Adaptive brightness filtering for robust performance under
+        varying computational and lighting constraints.
+      </p>
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag">ROS</span>
+        <span class="tag">CNN</span>
+        <span class="tag">OpenCV</span>
+        <span class="tag">PID Control</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Discretionary Trading & Market Research</span>
+        <span class="card-date">ONGOING</span>
+      </div>
+      <p class="card-desc">
+        Personally manage a six-figure discretionary portfolio across crypto spot and derivatives.
+        Operate wallet monitoring systems across Hyperliquid and Polymarket for signal generation.
+        Research and execute algorithmic airdrop strategies across emerging DeFi protocols
+        (Lighter, Aster, Hyperliquid). Active position sizing and risk management on all
+        discretionary positions. Exploring prediction market strategies for 2026.
+      </p>
+      <div class="tags">
+        <span class="tag highlight">Hyperliquid</span>
+        <span class="tag highlight">Polymarket</span>
+        <span class="tag">On-Chain Analysis</span>
+        <span class="tag">Discretionary Trading</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">Technical Stack</div>
+    <h2>Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h3>Languages</h3>
+        <p>Rust, Python, Solidity, Go, Java, C, SQL, C++</p>
+      </div>
+      <div class="skill-category">
+        <h3>Blockchain</h3>
+        <p>Foundry, Geth/Bor, The Graph, Tenderly, Alloy, ethers-rs, web3.py</p>
+      </div>
+      <div class="skill-category">
+        <h3>Infrastructure</h3>
+        <p>Linux, Docker, Git, PostgreSQL, SQLite, systemd, WebSocket</p>
+      </div>
+      <div class="skill-category">
+        <h3>Quantitative</h3>
+        <p>Bayesian optimization, AMM pricing (CPMM, CLAMM), statistical signal processing</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="section-label">Background</div>
+    <h2>Education</h2>
+    <div class="edu-row">
+      <div>
+        <div class="edu-degree">BASc Engineering Physics, Minor in Business</div>
+        <div class="edu-school">The University of British Columbia</div>
+      </div>
+      <div class="edu-meta">2022 – 2026</div>
+    </div>
+    <div class="edu-details">
+      Dean's Honour Roll (multiple years) · Relevant: Probability & Stochastic Processes,
+      Computational Physics, Applied Linear Algebra, Software Construction, Engineering Economics,
+      Financial Accounting, Micro & Macro Economics.
+    </div>
+
+    <div class="project-card" style="margin-top: 32px;">
+      <div class="card-header">
+        <span class="card-title">Other</span>
+      </div>
+      <p class="card-desc">
+        <strong>Artin Properties</strong> — Software Engineer (part-time), backend development. Sep–Dec 2025.<br>
+        <strong>Dometic Marine</strong> — Mechatronics Engineering Intern, embedded systems & electromechanical design. Jan–May 2024.<br>
+        <strong>UBC Formula SAE</strong> — Powertrain member. Sep 2023–Oct 2024.<br>
+        <strong>Tube-Frame Buggy (Personal Build)</strong> — Designed and fabricated a single-seat vehicle from scrap steel in my garage. Full build including frame welding, suspension geometry, and powertrain integration.<br>
+        <strong>Professional Tennis Coach</strong> — Former top-100 ranked junior in Canada. 2019–2021.
+      </p>
+      <!-- TODO: Add go-kart photos from Google Drive -->
+      <div class="photo-gallery">
+        <div class="photo-placeholder">buggy_front.jpg</div>
+        <div class="photo-placeholder">buggy_side.jpg</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section">
+    <div class="section-label">Get in Touch</div>
+    <h2>Let's Talk</h2>
+    <p>Open to quantitative trading roles in crypto and DeFi.</p>
+    <div class="contact-links">
+      <a href="mailto:lucasberretta03@gmail.com" class="contact-link">lucasberretta03@gmail.com</a>
+      <a href="tel:6048025071" class="contact-link">(604) 802-5071</a>
+      <a href="https://github.com/lucasberretta" class="contact-link">GitHub</a>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
