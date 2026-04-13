@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas Berretta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-glow: rgba(0,255,136,0.15);
+    --blue: #4488ff;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --text-dimmer: #555568;
+    --border: #2a2a3a;
+    --red: #ff4466;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    background: rgba(10,10,15,0.8);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--green);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 56px;
+    position: relative;
+  }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+  .hero h1 {
+    font-size: clamp(44px, 7vw, 80px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+  .hero h1 .accent { color: var(--green); }
+  .hero-sub {
+    font-size: 20px;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.6s;
+  }
+  .hero-cta {
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.8s;
+  }
+  .hero-cta a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .hero-cta a:hover {
+    background: rgba(0,255,136,0.08);
+    border-color: var(--green);
+  }
+
+  /* GRID BACKGROUND EFFECT */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(80px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTIONS */
+  section { padding: 100px 0; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  section h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 40px;
+  }
+
+  /* PROJECT CARDS */
+  .project-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px;
+    margin-bottom: 24px;
+    transition: border-color 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-2px);
+  }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover::before { opacity: 1; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .card-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dimmer);
+  }
+  .card-desc {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--bg3);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .tag.highlight {
+    color: var(--green);
+    border-color: rgba(0,255,136,0.3);
+    background: rgba(0,255,136,0.05);
+  }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-diagram, .card-diagram {
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #fff;
+    max-width: 600px;
+  }
+  .arch-diagram img, .card-diagram img {
+    width: 100%;
+    display: block;
+    max-height: 220px;
+    object-fit: contain;
+    padding: 8px;
+  }
+
+  /* CARD MEDIA ROW */
+  .card-media {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 20px auto;
+    max-width: 600px;
+  }
+  .card-media.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 460px;
+  }
+  .card-media img {
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card-media img:hover {
+    transform: scale(1.02);
+    border-color: var(--green-dim);
+  }
+  @media (max-width: 640px) {
+    .card-media { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .skill-category h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--green);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .skill-category p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* CARD STATUS */
+  .card-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .card-status.retired {
+    color: var(--text-dimmer);
+    border: 1px solid var(--border);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    text-align: center;
+    padding: 80px 0 120px;
+  }
+  .contact-section h2 { margin-bottom: 16px; }
+  .contact-section p {
+    color: var(--text-dim);
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+  .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .contact-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    text-decoration: none;
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .contact-link:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(0,255,136,0.05);
+  }
+
+  /* BUILD GALLERY */
+  .build-gallery {
+    margin-top: 24px;
+  }
+  .build-gallery-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+  .build-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .build-gallery-grid img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .build-gallery-grid img:hover {
+    transform: scale(1.02);
+    border-color: var(--green-dim);
+  }
+  .build-gallery-grid .span-2 {
+    grid-column: span 2;
+  }
+  .build-video-inline {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #000;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .build-video-inline:hover {
+    transform: scale(1.02);
+    border-color: var(--green-dim);
+  }
+  @media (max-width: 640px) {
+    .build-gallery-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .build-gallery-grid .span-2 {
+      grid-column: span 2;
+    }
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 11px; }
+    section { padding: 60px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo">LB_</a>
+    <div class="nav-links">
+      <a href="#trading">Trading</a>
+      <a href="#engineering">Engineering</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">Quantitative Trading & Systems Engineering</div>
+    <h1>Lucas <span class="accent">Berretta</span></h1>
+    <p class="hero-sub">
+      I build and operate low-latency trading infrastructure on EVM blockchains.
+      Co-founder of a self-funded quantitative trading team. Engineering Physics @ UBC.
+    </p>
+    <div class="hero-cta">
+      <a href="#trading">View Projects →</a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TRADING PROJECTS -->
+  <section id="trading">
+    <div class="section-label">Trading</div>
+    <h2>Trading Projects</h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Automated Arbitrage System · <a href="https://drive.google.com/file/d/1yiNnaoEYph3FmHBJDrYWQbE3RyaShXWX/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color:var(--green);text-decoration:none;font-size:14px;font-weight:400;">PL extension write-up ↗</a></span>
+        <span class="card-date">SEP 2024 → PRESENT · UBC</span>
+      </div>
+      <p class="card-desc">
+        End-to-end arbitrage infrastructure on Polygon PoS—self-sponsored. The link above is the UBC Engineering
+        Physics Project Lab extension work—research on latency differences in this stack. That PDF is only the
+        lab piece for that extension; what follows is the full self-sponsored system. The system runs a
+        self-hosted full node (Bor + Heimdall) on dedicated hardware, feeding a custom Rust
+        block indexer that maintains real-time AMM pool state in memory.
+        On every new block, the detection engine scans the pool graph for mispricing and submits atomic
+        execution transactions through Solidity contracts that auto-revert if unprofitable. Zero execution
+        risk by construction.
+      </p>
+
+      <div class="arch-diagram">
+        <img src="images/arb-architecture.png" alt="Arbitrage system architecture — Blockchain, Server, Indexer, Scraper, ArbFinder">
+      </div>
+
+      <div class="tags">
+        <span class="tag">Extension</span>
+        <span class="tag">Project Lab</span>
+        <span class="tag">UBC</span>
+        <span class="tag">Latency</span>
+        <span class="tag highlight">Rust</span>
+        <span class="tag highlight">Solidity</span>
+        <span class="tag">Go</span>
+        <span class="tag">Python</span>
+        <span class="tag">Foundry</span>
+        <span class="tag">Geth/Bor</span>
+        <span class="tag">Alloy</span>
+        <span class="tag">WebSocket</span>
+        <span class="tag">SQLite</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Berachain DEX Arbitrage System</span>
+        <span class="card-date">2025 <span class="card-status retired">Retired</span></span>
+      </div>
+      <p class="card-desc">
+        Cross-DEX arbitrage bot on Berachain mainnet. Scanned 145+ pools per block
+        across CPMM, CLAMM, and Balancer-style DEXes with sub-second cycle times.
+        Multicall-based state polling feeding a SciPy route optimizer, with custom
+        Solidity lens contracts for batch reads and executor contracts for atomic
+        multi-hop swaps. 3M+ daily RPC requests at peak. Retired due to Berachain
+        RPC instability and breaking changes in the lens contract interface across
+        node upgrades.
+      </p>
+
+      <div class="card-media">
+        <img src="images/bera-pools.png" alt="Targeted pool database" onclick="openLightbox(this)">
+        <img src="images/bera-tx.png" alt="Executed arbitrage transaction" onclick="openLightbox(this)">
+        <img src="images/bera-weth-inout.png" alt="WETH in/out — arbitrage profit" onclick="openLightbox(this)">
+      </div>
+
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag highlight">Solidity</span>
+        <span class="tag">Foundry</span>
+        <span class="tag">web3.py</span>
+        <span class="tag">SciPy</span>
+        <span class="tag">Multicall</span>
+        <span class="tag">Berachain</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Quantitative Trading Framework</span>
+        <span class="card-date">JAN – FEB 2025</span>
+      </div>
+      <p class="card-desc">
+        Backtesting and signal generation framework for discretionary crypto trading. Ingests millions
+        of spot and futures trades into PostgreSQL, applies correlated parameter filtering across
+        configurable strategy dimensions, and runs Bayesian hyperparameter optimization with
+        custom rolling data structures. Dynamic position sizing informed by volatility and
+        statistical regime measures.
+      </p>
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Bayesian Optimization</span>
+        <span class="tag">Statistical Analysis</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Algorithmic Airdrop Farming System</span>
+        <span class="card-date">2025</span>
+      </div>
+      <p class="card-desc">
+        Cross-venue execution system designed to capture DeFi protocol incentive programs.
+        Maintains delta-neutral exposure by running offsetting positions across paired
+        exchanges, sizing entries from depth-weighted VWAP when spread exceeds fee
+        thresholds. Concurrent leg submission with partial-fill reconciliation.
+        Position limits tuned to maximize time-weighted reward accrual.
+      </p>
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag highlight">TypeScript</span>
+        <span class="tag">asyncio</span>
+        <span class="tag">WebSocket</span>
+        <span class="tag">Docker</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ENGINEERING PROJECTS -->
+  <section id="engineering">
+    <div class="section-label">Engineering</div>
+    <h2>Engineering Projects</h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Engineering Physics ML Competition — 2nd Place · <a href="https://drive.google.com/file/d/1FK_4Z2F3IWP55q46mfsydTPLYn8NBNE8/view" target="_blank" style="color:var(--green);text-decoration:none;font-size:14px;">Final Report ↗</a></span>
+        <span class="card-date">MAR 2025</span>
+      </div>
+      <p class="card-desc">
+        Developed an autonomous robot that navigates complex multi-terrain courses using a finite
+        state machine with five tuned PID controllers. Real-time computer vision pipeline: SIFT-based
+        detection with homography correction, custom-trained CNN with near-perfect accuracy on
+        37-class character recognition. Adaptive brightness filtering for robust performance under
+        varying computational and lighting constraints.
+      </p>
+
+      <div class="card-media">
+        <img src="images/robot-demo.gif" alt="Robot navigating the course">
+        <img src="images/robot-board-detection.png" alt="SIFT board detection with homography" onclick="openLightbox(this)">
+        <img src="images/robot-cnn-training.png" alt="CNN training curves" onclick="openLightbox(this)">
+      </div>
+
+      <div class="card-diagram">
+        <img src="images/robot-architecture.png" alt="ROS node architecture — line following, board detection, character recognition" onclick="openLightbox(this)">
+      </div>
+
+      <div class="tags">
+        <span class="tag highlight">Python</span>
+        <span class="tag">ROS</span>
+        <span class="tag">CNN</span>
+        <span class="tag">OpenCV</span>
+        <span class="tag">PID Control</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="card-header">
+        <span class="card-title">Tube-Frame Buggy — Personal Build</span>
+      </div>
+      <p class="card-desc">
+        Designed and fabricated a single-seat cross-kart powered by a 1999 Suzuki GSX-R 600cc
+        engine. Built the tube frame from DOM steel, engineered independent suspension geometry,
+        fabricated custom 4-2 exhaust headers, rebuilt the carburetors and engine, rigged the
+        fuel delivery system (electrical and mechanical), and wired all electrical systems from scratch.
+      </p>
+      <div class="build-gallery">
+        <div class="build-gallery-grid">
+          <img src="images/buggy-frame-jig.png" alt="Frame construction on jig" onclick="openLightbox(this)">
+          <img src="images/buggy-frame-workbench.png" alt="Bare frame with suspension on workbench" onclick="openLightbox(this)">
+          <img src="images/buggy-frame-night.png" alt="Rolling chassis — bare frame with wheels" onclick="openLightbox(this)">
+          <img src="images/buggy-welding.png" alt="Night welding session" onclick="openLightbox(this)">
+          <img src="images/buggy-finished-rear.png" alt="Finished buggy — rear three-quarter view" onclick="openLightbox(this)">
+          <img src="images/buggy-finished-side.png" alt="Finished buggy — side view" onclick="openLightbox(this)">
+          <video class="build-video-inline" controls preload="metadata" poster="images/buggy-finished-front.png">
+            <source src="images/buggy-video.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="tags" style="margin-top: 20px;">
+        <span class="tag">Welding</span>
+        <span class="tag">Suspension Design</span>
+        <span class="tag">Engine Rebuild</span>
+        <span class="tag">Electrical Systems</span>
+        <span class="tag">Fabrication</span>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="divider">
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">Technical Stack</div>
+    <h2>Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <h3>Languages</h3>
+        <p>Rust, Python, Solidity, Go, Java, C, SQL, C++</p>
+      </div>
+      <div class="skill-category">
+        <h3>Blockchain</h3>
+        <p>Foundry, Geth/Bor, The Graph, Tenderly, Alloy, ethers-rs, web3.py</p>
+      </div>
+      <div class="skill-category">
+        <h3>Infrastructure</h3>
+        <p>Linux, Docker, Git, PostgreSQL, SQLite, systemd, WebSocket</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section">
+    <div class="section-label">Get in Touch</div>
+    <h2>Let's Talk</h2>
+    <p>Open to quantitative trading roles.</p>
+    <div class="contact-links">
+      <a href="mailto:lucasberretta03@gmail.com" class="contact-link">lucasberretta03@gmail.com</a>
+      <a href="tel:6048025071" class="contact-link">(604) 802-5071</a>
+      <a href="https://github.com/lucasberretta" class="contact-link">GitHub</a>
+    </div>
+  </section>
+
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+function openLightbox(el) {
+  var lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = el.src;
+  lb.classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+
+</body>
+</html>
